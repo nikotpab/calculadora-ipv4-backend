@@ -1,0 +1,43 @@
+# /etc/systemd/system/calculadora-ipv4.service
+#
+# API de la calculadora IPv4 servida por gunicorn. Escucha SOLO en
+# 127.0.0.1:8000; Nginx es quien atiende el puerto 80 y le reenvía /api/.
+#
+# Instalar:   sudo cp deploy/calculadora-ipv4.service /etc/systemd/system/
+#             sudo systemctl daemon-reload
+#             sudo systemctl enable --now calculadora-ipv4
+
+[Unit]
+Description=Calculadora IPv4 - API Flask servida por gunicorn
+After=network.target
+
+[Service]
+# gunicorn avisa a systemd cuando está listo (sd_notify READY=1).
+Type=notify
+NotifyAccess=main
+User=calculadora
+Group=calculadora
+WorkingDirectory=/opt/calculadora-ipv4-api
+ExecStart=/opt/calculadora-ipv4-api/venv/bin/gunicorn \
+    --bind 127.0.0.1:8000 \
+    --workers 2 \
+    --access-logfile - \
+    --error-logfile - \
+    app:app
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=10
+
+# Reinicio automático si el proceso termina.
+Restart=always
+RestartSec=3
+
+# Endurecimiento básico: el servicio no puede escribir en /usr, /boot ni
+# /etc, no ve /home y tiene un /tmp propio.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
