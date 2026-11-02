@@ -38,7 +38,8 @@ biblioteca estándar y no importa Flask ni `ipaddress`.
 │   ├── test_casos_minimos.py los 11 casos, campo por campo, y formas A = B
 │   └── test_api.py           códigos HTTP, forma exacta del JSON, GET = POST
 ├── scripts/
-│   └── tabla_pruebas.py      genera la tabla de pruebas del informe (Markdown)
+│   ├── tabla_pruebas.py      genera la tabla de pruebas del informe (Markdown)
+│   └── servidor_local.py     desarrollo: frontend + API en el mismo origen, como Nginx
 ├── deploy/
 │   ├── calculadora-ipv4.service   unidad systemd de gunicorn
 │   └── nginx/calculadora-ipv4.conf
@@ -64,6 +65,19 @@ pip install -r requirements-dev.txt
 flask --app app run                    # desarrollo: http://127.0.0.1:5000
 gunicorn --bind 127.0.0.1:8000 app:app # como en producción (Linux/macOS)
 ```
+
+### Con el frontend
+
+El frontend llama a `/api/…` en su mismo origen (sin CORS). Para probarlo en
+local, con el repositorio `calculadora-ipv4-frontend` clonado al lado de este:
+
+```bash
+python scripts/servidor_local.py       # http://127.0.0.1:8080
+python scripts/servidor_local.py --frontend /ruta/a/calculadora-ipv4-frontend/app --puerto 9000
+```
+
+Sirve los archivos de `app/` del frontend y deja `/api/` a Flask, igual que
+Nginx en producción. Solo para desarrollo.
 
 ## Pruebas
 
