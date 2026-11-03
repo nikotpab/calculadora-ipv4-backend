@@ -39,7 +39,8 @@ biblioteca estándar y no importa Flask ni `ipaddress`.
 │   └── test_api.py           códigos HTTP, forma exacta del JSON, GET = POST
 ├── scripts/
 │   ├── tabla_pruebas.py      genera la tabla de pruebas del informe (Markdown)
-│   └── servidor_local.py     desarrollo: frontend + API en el mismo origen, como Nginx
+│   ├── servidor_local.py     desarrollo: frontend + API en el mismo origen, como Nginx
+│   └── verificar_servidor.py prueba los 15 casos del informe por HTTP contra una API en ejecución
 ├── deploy/
 │   ├── calculadora-ipv4.service   unidad systemd de gunicorn
 │   └── nginx/calculadora-ipv4.conf
@@ -99,6 +100,15 @@ la forma exacta del JSON de la API.
 `tabla_pruebas.py` compara cada caso con un resultado esperado escrito a
 mano y escribe la tabla "entrada | resultado esperado | resultado obtenido |
 ¿coincide?". Sale con código 1 si algún caso no coincide.
+
+`verificar_servidor.py` prueba por HTTP los 15 casos del informe contra una
+API que ya esté corriendo (solo biblioteca estándar, sirve desde cualquier
+equipo con Python 3). Sirve para comprobar el servidor desplegado:
+
+```bash
+python3 scripts/verificar_servidor.py http://IP_DEL_SERVIDOR
+python3 scripts/verificar_servidor.py http://127.0.0.1:8000 --md salida.md
+```
 
 ## Contrato de la API
 
